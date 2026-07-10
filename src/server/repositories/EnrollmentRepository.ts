@@ -12,4 +12,9 @@ export class EnrollmentRepository {
       ),
     });
   }
+  async findCoursesForUser(userId: string) {
+  return db.query.courseEnrollments.findMany({
+    where: eq(courseEnrollments.userId, userId),
+  });
+}
 }
