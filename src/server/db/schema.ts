@@ -1,3 +1,4 @@
+import { relations } from "drizzle-orm";
 import {
   pgEnum,
   pgTable,
@@ -88,3 +89,54 @@ export const savedPosts = pgTable(
     uniqueUserPost: unique().on(table.userId, table.postId),
   })
 );
+// ==============================
+// Relations
+// ==============================
+
+export const usersRelations = relations(users, ({ many }) => ({
+  posts: many(posts),
+  enrollments: many(courseEnrollments),
+  savedPosts: many(savedPosts),
+}));
+
+export const coursesRelations = relations(courses, ({ many }) => ({
+  posts: many(posts),
+  enrollments: many(courseEnrollments),
+}));
+
+export const courseEnrollmentsRelations = relations(
+  courseEnrollments,
+  ({ one }) => ({
+    user: one(users, {
+      fields: [courseEnrollments.userId],
+      references: [users.id],
+    }),
+    course: one(courses, {
+      fields: [courseEnrollments.courseId],
+      references: [courses.id],
+    }),
+  })
+);
+
+export const postsRelations = relations(posts, ({ one, many }) => ({
+  author: one(users, {
+    fields: [posts.authorId],
+    references: [users.id],
+  }),
+  course: one(courses, {
+    fields: [posts.courseId],
+    references: [courses.id],
+  }),
+  savedPosts: many(savedPosts),
+}));
+
+export const savedPostsRelations = relations(savedPosts, ({ one }) => ({
+  user: one(users, {
+    fields: [savedPosts.userId],
+    references: [users.id],
+  }),
+  post: one(posts, {
+    fields: [savedPosts.postId],
+    references: [posts.id],
+  }),
+}));
