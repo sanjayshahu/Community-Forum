@@ -4,13 +4,7 @@ import { feedService } from "@/server/services/FeedService";
 
 export async function GET() {
   try {
-    /**
-     * Stub authentication.
-     * Replace later with NextAuth/Clerk.
-     */
-    const userId = "USER_ID";
-
-    const posts = await feedService.getFeed(userId);
+    const posts = await feedService.getAllPosts();
 
     return NextResponse.json(posts);
   } catch (error) {

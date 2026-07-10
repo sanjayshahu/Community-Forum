@@ -24,6 +24,15 @@ export class FeedService {
 
     return postRepository.findFeed(courseIds);
   }
+
+
+
+
+  async getAllPosts() {
+    return postRepository.findAll();
+  }
 }
+
+
 
 export const feedService = new FeedService();

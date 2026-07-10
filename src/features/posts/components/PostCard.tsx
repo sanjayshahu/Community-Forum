@@ -1,6 +1,6 @@
 "use client";
 
-import BookmarkButton from "./BookmarkButton";
+import BookmarkButton from "./BookMarkButton";
 
 interface Props {
   post: any;
@@ -11,7 +11,7 @@ export default function PostCard({
 }: Props) {
   return (
     <div className="border rounded-lg p-5 shadow-sm">
-
+    
       <h2 className="text-xl font-semibold">
         {post.title}
       </h2>
@@ -25,6 +25,10 @@ export default function PostCard({
           postId={post.id}
         />
       </div>
+
+         <small>
+            {new Date(post.createdAt).toLocaleString()}
+          </small>
 
     </div>
   );
