@@ -1,7 +1,8 @@
+import type { FeedResponse } from "../types";
 export async function getPosts(
   page = 1,
-  limit = 10
-) {
+  limit = 2
+): Promise<FeedResponse> {
   const response = await fetch(
     `/api/posts?page=${page}&limit=${limit}`
   );

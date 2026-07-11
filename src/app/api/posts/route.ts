@@ -5,27 +5,44 @@ import { getCurrentUser } from "@/server/auth/auth";
 
 export async function GET(request: Request) {
   try {
+    // 1. Get authenticated user
     const user = await getCurrentUser();
 
+    // 2. Read query parameters
     const { searchParams } = new URL(request.url);
 
-    const page = Number(searchParams.get("page") ?? 1);
+    const page = Math.max(
+      Number(searchParams.get("page") ?? 1),
+      1
+    );
 
-    const limit = Number(searchParams.get("limit") ?? 10);
+    const limit = Math.max(
+      Number(searchParams.get("limit") ?? 10),
+      1
+    );
 
-    const posts = await feedService.getFeed(
+    // 3. Get paginated feed
+    const feed = await feedService.getFeed(
       user.id,
       page,
       limit
     );
 
-    return NextResponse.json(posts);
+    // 4. Return response
+    return NextResponse.json(feed);
   } catch (error) {
-    console.error(error);
+    console.error("GET /api/posts:", error);
 
     return NextResponse.json(
-      { message: "Failed to fetch posts" },
-      { status: 500 }
+      {
+        message:
+          error instanceof Error
+            ? error.message
+            : "Failed to fetch posts",
+      },
+      {
+        status: 500,
+      }
     );
   }
 }

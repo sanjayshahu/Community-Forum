@@ -6,7 +6,10 @@ import {
 } from "drizzle-orm";
 
 import { db } from "../db/client";
-import { posts } from "../db/schema";
+import {
+  posts,
+  savedPosts,
+} from "../db/schema";
 
 export class PostRepository {
   async findById(id: string) {
@@ -22,12 +25,24 @@ export class PostRepository {
     limit: number
   ) {
     if (courseIds.length === 0) {
-      return [];
+      return {
+        posts: [],
+        totalItems: 0,
+      };
     }
 
     const offset = (page - 1) * limit;
 
-    return db
+    // Total matching posts
+    const [{ count }] = await db
+      .select({
+        count: sql<number>`count(*)`,
+      })
+      .from(posts)
+      .where(inArray(posts.courseId, courseIds));
+
+    // Current page posts
+    const feedPosts = await db
       .select({
         id: posts.id,
         title: posts.title,
@@ -39,7 +54,7 @@ export class PostRepository {
         hasSaved: sql<boolean>`
           EXISTS (
             SELECT 1
-            FROM saved_posts sp
+            FROM ${savedPosts} sp
             WHERE
               sp.post_id = ${posts.id}
               AND sp.user_id = ${userId}
@@ -50,7 +65,7 @@ export class PostRepository {
         savesCount: sql<number>`
           (
             SELECT COUNT(*)
-            FROM saved_posts sp
+            FROM ${savedPosts} sp
             WHERE
               sp.post_id = ${posts.id}
               AND sp.deleted_at IS NULL
@@ -62,6 +77,11 @@ export class PostRepository {
       .orderBy(desc(posts.createdAt))
       .limit(limit)
       .offset(offset);
+
+    return {
+      posts: feedPosts,
+      totalItems: Number(count),
+    };
   }
 
   async findAll() {
