@@ -1,5 +1,10 @@
-export async function getPosts() {
-  const response = await fetch("/api/posts");
+export async function getPosts(
+  page = 1,
+  limit = 10
+) {
+  const response = await fetch(
+    `/api/posts?page=${page}&limit=${limit}`
+  );
 
   if (!response.ok) {
     throw new Error("Failed to fetch posts");
@@ -9,9 +14,12 @@ export async function getPosts() {
 }
 
 export async function savePost(postId: string) {
-  const response = await fetch(`/api/posts/${postId}/save`, {
-    method: "POST",
-  });
+  const response = await fetch(
+    `/api/posts/${postId}/save`,
+    {
+      method: "POST",
+    }
+  );
 
   if (!response.ok) {
     throw new Error("Failed to save post");
@@ -21,9 +29,12 @@ export async function savePost(postId: string) {
 }
 
 export async function unsavePost(postId: string) {
-  const response = await fetch(`/api/posts/${postId}/save`, {
-    method: "DELETE",
-  });
+  const response = await fetch(
+    `/api/posts/${postId}/save`,
+    {
+      method: "DELETE",
+    }
+  );
 
   if (!response.ok) {
     throw new Error("Failed to unsave post");

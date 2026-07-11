@@ -1,23 +1,44 @@
 "use client";
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { savePost } from "../api/postApi";
+
+import {
+  savePost,
+  unsavePost,
+} from "../api/postApi";
+
 import { queryKeys } from "@/lib/queryKeys";
 
 export function useSavePost() {
   const queryClient = useQueryClient();
 
-  return useMutation({
+  const invalidateQueries = () => {
+    queryClient.invalidateQueries({
+      queryKey: queryKeys.posts,
+    });
+
+    queryClient.invalidateQueries({
+      queryKey: queryKeys.savedPosts,
+    });
+  };
+
+  const saveMutation = useMutation({
     mutationFn: savePost,
 
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.posts,
-      });
-
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.savedPosts,
-      });
-    },
+    onSuccess: invalidateQueries,
   });
+
+  const unsaveMutation = useMutation({
+    mutationFn: unsavePost,
+
+    onSuccess: invalidateQueries,
+  });
+
+  return {
+    savePost: saveMutation.mutate,
+    unsavePost: unsaveMutation.mutate,
+
+    isSaving: saveMutation.isPending,
+    isUnsaving: unsaveMutation.isPending,
+  };
 }

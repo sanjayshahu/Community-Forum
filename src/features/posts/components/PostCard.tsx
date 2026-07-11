@@ -3,7 +3,7 @@
 import BookmarkButton from "./BookMarkButton";
 
 interface Props {
-  post: any;
+  post: any;//testing
 }
 
 export default function PostCard({
@@ -21,9 +21,10 @@ export default function PostCard({
       </p>
 
       <div className="mt-5">
-        <BookmarkButton
-          postId={post.id}
-        />
+      <BookmarkButton
+  postId={post.id}
+  hasSaved={post.hasSaved}
+/>
       </div>
 
          <small>

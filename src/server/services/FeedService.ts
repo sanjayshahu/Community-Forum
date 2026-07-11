@@ -4,13 +4,11 @@ import {
 } from "@/server/repositories";
 
 export class FeedService {
-  async getFeed(userId: string) {
-    /**
-     * This requires a repository method:
-     *
-     * enrollmentRepository.findCoursesForUser(userId)
-     */
-
+async getFeed(
+    userId: string,
+    page: number,
+    limit: number
+  ) {
     const enrollments =
       await enrollmentRepository.findCoursesForUser(userId);
 
@@ -22,7 +20,12 @@ export class FeedService {
       return [];
     }
 
-    return postRepository.findFeed(courseIds);
+  return postRepository.findFeed(
+  courseIds,
+  userId,
+  page,
+  limit
+);
   }
 
 
