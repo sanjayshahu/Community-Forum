@@ -1,7 +1,7 @@
 "use client";
 
 import { useSavedPosts } from "../hooks/useSavedPosts";
-import  PostCard  from "../../components/PostCard";
+import PostCard from "@/features/posts/components/PostCard";
 import { EmptyState } from "../components/EmptyState";
 
 export function SavedList() {
@@ -15,7 +15,7 @@ export function SavedList() {
   } = useSavedPosts();
 
   if (isLoading) {
-    return <div className="p-4 text-center">Loading saved posts...</div>;
+    return <div className="p-4 text-center">Loading saved posts…</div>;
   }
 
   if (isError) {
@@ -34,7 +34,7 @@ export function SavedList() {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       {posts.map((post) => (
         <PostCard key={post.id} post={post} />
       ))}
@@ -45,7 +45,7 @@ export function SavedList() {
             disabled={isFetchingNextPage}
             className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:opacity-50"
           >
-            {isFetchingNextPage ? "Loading..." : "Load more"}
+            {isFetchingNextPage ? "Loading more…" : "Load more"}
           </button>
         </div>
       )}

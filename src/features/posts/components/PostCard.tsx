@@ -20,15 +20,13 @@ export default function PostCard({
       </p>
 
       <div className="mt-5">
-        <BookmarkButton
-          postId={post.id}
-          hasSaved={post.hasSaved}
-        />
+     <BookmarkButton
+  postId={post.id}
+  hasSaved={post.hasSaved}
+  savesCount={post.savesCount}  
+/>
 
-        <p>
-          {post.savesCount}{" "}
-          {post.savesCount === 1 ? "save" : "saves"}
-        </p>
+      
 
         <small>
           {new Date(post.createdAt).toLocaleString()}

@@ -2,23 +2,22 @@
 
 import { useSavePost } from "../hooks/useSavePost";
 
-interface Props {
+interface BookmarkButtonProps {
   postId: string;
-  hasSaved?: boolean;
+  hasSaved: boolean;
+  savesCount: number;
 }
 
 export default function BookmarkButton({
   postId,
   hasSaved,
-}: Props) {
-  const {
-    savePost,
-    unsavePost,
-    isSaving,
-    isUnsaving,
-  } = useSavePost();
+  savesCount,
+}: BookmarkButtonProps) {
+  const { savePost, unsavePost, isSaving, isUnsaving } = useSavePost();
 
-  const handleClick = () => {
+  const isLoading = isSaving || isUnsaving;
+
+  const handleToggle = () => {
     if (hasSaved) {
       unsavePost(postId);
     } else {
@@ -27,16 +26,21 @@ export default function BookmarkButton({
   };
 
   return (
-    <button
-      onClick={handleClick}
-      disabled={isSaving || isUnsaving}
-      className="rounded bg-blue-600 px-4 py-2 text-white disabled:opacity-50"
-    >
-      {isSaving || isUnsaving
-        ? "Loading..."
-        : hasSaved
-        ? "Unsave"
-        : "Save"}
-    </button>
+    <div className="flex items-center gap-2">
+      <button
+        onClick={handleToggle}
+        disabled={isLoading}
+        className={`px-3 py-1 rounded text-sm font-medium transition-colors ${
+          hasSaved
+            ? "bg-blue-600 text-white hover:bg-blue-700"
+            : "bg-gray-200 text-gray-800 hover:bg-gray-300"
+        } ${isLoading ? "opacity-50 cursor-not-allowed" : ""}`}
+      >
+        {isLoading ? "Saving..." : hasSaved ? "Saved" : "Save"}
+      </button>
+      <span className="text-sm text-gray-600">
+        {savesCount} {savesCount === 1 ? "save" : "saves"}
+      </span>
+    </div>
   );
 }
