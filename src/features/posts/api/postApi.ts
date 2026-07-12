@@ -43,3 +43,18 @@ export async function unsavePost(postId: string) {
 
   return response.json();
 }
+
+export async function getSavedPosts(
+  page = 1,
+  limit = 10
+): Promise<FeedResponse> {
+  const response = await fetch(
+    `/api/saved?page=${page}&limit=${limit}`
+  );
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch saved posts");
+  }
+
+  return response.json();
+}

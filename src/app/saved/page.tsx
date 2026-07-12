@@ -1,13 +1,10 @@
-import SavedList from "@/features/saved/components/SavedList";
+import {SavedList} from "../../features/posts/saved/components/SavedList";
 
 export default function SavedPage() {
   return (
-    <main className="container mx-auto p-6">
-      <h1 className="text-3xl font-bold mb-6">
-        Saved Posts
-      </h1>
-
+    <div className="container mx-auto px-4 py-8 max-w-3xl">
+      <h1 className="text-2xl font-bold mb-6">Saved Posts</h1>
       <SavedList />
-    </main>
+    </div>
   );
 }

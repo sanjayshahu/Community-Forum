@@ -1,10 +1,11 @@
-import { relations } from "drizzle-orm";
+import { relations, sql } from "drizzle-orm";
 import {
   pgEnum,
   pgTable,
   text,
   timestamp,
   unique,
+  uniqueIndex,
   uuid,
   varchar,
 } from "drizzle-orm/pg-core";
@@ -31,6 +32,7 @@ export const courses = pgTable("courses", {
 
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
+
 export const courseEnrollments = pgTable(
   "course_enrollments",
   {
@@ -68,6 +70,7 @@ export const posts = pgTable("posts", {
 
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
+
 export const savedPosts = pgTable(
   "saved_posts",
   {
@@ -86,9 +89,14 @@ export const savedPosts = pgTable(
     deletedAt: timestamp("deleted_at"),
   },
   (table) => ({
-    uniqueUserPost: unique().on(table.userId, table.postId),
+    uniqueActiveSave: uniqueIndex(
+      "saved_posts_user_post_active_idx"
+    )
+      .on(table.userId, table.postId)
+      .where(sql`${table.deletedAt} IS NULL`),
   })
 );
+
 // ==============================
 // Relations
 // ==============================

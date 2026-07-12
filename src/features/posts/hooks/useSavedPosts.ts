@@ -2,7 +2,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 
-import { getSavedPosts } from "../api/savedApi";
+";
 import { queryKeys } from "@/lib/queryKeys";
 
 export function useSavedPosts() {
