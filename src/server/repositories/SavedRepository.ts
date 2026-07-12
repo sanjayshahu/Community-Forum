@@ -13,10 +13,14 @@ export class SavedRepository {
     });
   }
 
+  // ✅ Fixed: use the schema column names (camelCase)
   async create(data: NewSavedPost) {
     const [saved] = await db
       .insert(savedPosts)
-      .values(data)
+      .values({
+        userId: data.userId,
+        postId: data.postId,
+      })
       .returning();
     return saved;
   }
@@ -39,10 +43,6 @@ export class SavedRepository {
     return saved;
   }
 
-  /**
-   * List saved posts for a user with pagination.
-   * Returns most-recently-saved first.
-   */
   async listSavedPosts(
     userId: string,
     page: number,
@@ -50,7 +50,6 @@ export class SavedRepository {
   ): Promise<{ posts: any[]; totalItems: number }> {
     const offset = (page - 1) * limit;
 
-    // Get total count
     const [{ count }] = await db
       .select({ count: sql<number>`count(*)` })
       .from(savedPosts)
@@ -61,7 +60,6 @@ export class SavedRepository {
         )
       );
 
-    // Get paginated posts with savesCount
     const savedPostsList = await db
       .select({
         id: posts.id,
