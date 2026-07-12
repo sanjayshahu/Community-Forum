@@ -20,12 +20,14 @@ export class PostRepository {
     });
   }
 
-async findFeed(
+  async findFeed(
     courseIds: string[],
     userId: string,
     page: number,
     limit: number
   ) {
+  
+
     if (courseIds.length === 0) {
       return {
         posts: [],
@@ -56,17 +58,17 @@ async findFeed(
             WHEN ${savedPosts.id} IS NULL THEN false
             ELSE true
           END
-        `,
+        `.mapWith(Boolean),
 
         savesCount: sql<number>`
           (
             SELECT COUNT(*)
-            FROM saved_posts
+            FROM saved_posts sp
             WHERE
-              post_id = ${posts.id}
-              AND deleted_at IS NULL
+              sp.post_id = ${posts.id}
+              AND sp.deleted_at IS NULL
           )
-        `,
+        `.mapWith(Number),
       })
       .from(posts)
       .leftJoin(
@@ -82,7 +84,7 @@ async findFeed(
       .limit(limit)
       .offset(offset);
 
-  
+
 
     return {
       posts: feedPosts,

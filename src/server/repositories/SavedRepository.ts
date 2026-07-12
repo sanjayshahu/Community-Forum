@@ -1,11 +1,12 @@
-import { and, eq, isNull } from "drizzle-orm";
+import { and, eq, isNull, sql } from "drizzle-orm";
 
 import { db } from "../db/client";
-import { savedPosts } from "../db/schema";
+import { posts, savedPosts } from "../db/schema";
 import { NewSavedPost } from "@/types/database";
 
 export class SavedRepository {
   async findByUserAndPost(userId: string, postId: string) {
+
     return db.query.savedPosts.findFirst({
       where: and(
         eq(savedPosts.userId, userId),
@@ -48,11 +49,37 @@ export class SavedRepository {
   }
 
   async listSavedPosts(userId: string) {
-    return db.query.savedPosts.findMany({
-      where: and(
-        eq(savedPosts.userId, userId),
-        isNull(savedPosts.deletedAt)
-      ),
-    });
+    return db
+      .select({
+        id: posts.id,
+        title: posts.title,
+        content: posts.content,
+        courseId: posts.courseId,
+        authorId: posts.authorId,
+        createdAt: posts.createdAt,
+
+        hasSaved: sql<boolean>`true`,
+
+        savesCount: sql<number>`
+          (
+            SELECT COUNT(*)
+            FROM saved_posts sp
+            WHERE
+              sp.post_id = ${posts.id}
+              AND sp.deleted_at IS NULL
+          )
+        `.mapWith(Number),
+      })
+      .from(savedPosts)
+      .innerJoin(
+        posts,
+        eq(savedPosts.postId, posts.id)
+      )
+      .where(
+        and(
+          eq(savedPosts.userId, userId),
+          isNull(savedPosts.deletedAt)
+        )
+      );
   }
 }

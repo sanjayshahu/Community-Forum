@@ -2,10 +2,9 @@ export interface Post {
   id: string;
   title: string;
   content: string;
-  courseId: string;
   authorId: string;
+  courseId: string;
   createdAt: string;
-
   hasSaved: boolean;
   savesCount: number;
 }
@@ -15,7 +14,6 @@ export interface Pagination {
   limit: number;
   totalItems: number;
   totalPages: number;
-
   hasNextPage: boolean;
   hasPreviousPage: boolean;
 }

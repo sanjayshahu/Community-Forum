@@ -33,10 +33,7 @@ export class FeedService {
     }
 
     // 3. Fetch posts + total count
-    const {
-      posts,
-      totalItems,
-    } = await postRepository.findFeed(
+    const result = await postRepository.findFeed(
       courseIds,
       userId,
       page,
@@ -45,21 +42,18 @@ export class FeedService {
 
     // 4. Calculate pagination
     const totalPages = Math.ceil(
-      totalItems / limit
+      result.totalItems / limit
     );
 
     // 5. Return API response
     return {
-      data: posts,
-
+      data: result.posts,
       pagination: {
         page,
         limit,
-        totalItems,
+        totalItems: result.totalItems,
         totalPages,
-
         hasNextPage: page < totalPages,
-
         hasPreviousPage: page > 1,
       },
     };

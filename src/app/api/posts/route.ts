@@ -22,14 +22,14 @@ export async function GET(request: Request) {
     );
 
     // 3. Get paginated feed
-    const feed = await feedService.getFeed(
+    const posts = await feedService.getFeed(
       user.id,
       page,
       limit
     );
 
     // 4. Return response
-    return NextResponse.json(feed);
+    return NextResponse.json(posts);
   } catch (error) {
     console.error("GET /api/posts:", error);
 
