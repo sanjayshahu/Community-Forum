@@ -1,7 +1,9 @@
 import {
+  and,
   desc,
   eq,
   inArray,
+  isNull,
   sql,
 } from "drizzle-orm";
 
@@ -18,7 +20,7 @@ export class PostRepository {
     });
   }
 
-  async findFeed(
+async findFeed(
     courseIds: string[],
     userId: string,
     page: number,
@@ -33,7 +35,6 @@ export class PostRepository {
 
     const offset = (page - 1) * limit;
 
-    // Total matching posts
     const [{ count }] = await db
       .select({
         count: sql<number>`count(*)`,
@@ -41,7 +42,6 @@ export class PostRepository {
       .from(posts)
       .where(inArray(posts.courseId, courseIds));
 
-    // Current page posts
     const feedPosts = await db
       .select({
         id: posts.id,
@@ -52,31 +52,37 @@ export class PostRepository {
         createdAt: posts.createdAt,
 
         hasSaved: sql<boolean>`
-          EXISTS (
-            SELECT 1
-            FROM ${savedPosts} sp
-            WHERE
-              sp.post_id = ${posts.id}
-              AND sp.user_id = ${userId}
-              AND sp.deleted_at IS NULL
-          )
+          CASE
+            WHEN ${savedPosts.id} IS NULL THEN false
+            ELSE true
+          END
         `,
 
         savesCount: sql<number>`
           (
             SELECT COUNT(*)
-            FROM ${savedPosts} sp
+            FROM saved_posts
             WHERE
-              sp.post_id = ${posts.id}
-              AND sp.deleted_at IS NULL
+              post_id = ${posts.id}
+              AND deleted_at IS NULL
           )
         `,
       })
       .from(posts)
+      .leftJoin(
+        savedPosts,
+        and(
+          eq(savedPosts.postId, posts.id),
+          eq(savedPosts.userId, userId),
+          isNull(savedPosts.deletedAt)
+        )
+      )
       .where(inArray(posts.courseId, courseIds))
       .orderBy(desc(posts.createdAt))
       .limit(limit)
       .offset(offset);
+
+  
 
     return {
       posts: feedPosts,
